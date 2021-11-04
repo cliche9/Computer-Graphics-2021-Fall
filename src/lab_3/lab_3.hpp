@@ -74,7 +74,7 @@ struct Polygon {
 };
 
 struct ActiveEdge {
-    int currentX;
+    float currentX;
     float incrementX;
     int ymax;
     

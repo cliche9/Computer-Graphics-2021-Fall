@@ -9,19 +9,18 @@
 #include "lab_3.hpp"
 using namespace std;
 
-int SCR_WIDTH = 640, SCR_HERIGHT = 480;
+int SCR_WIDTH = 640, SCR_HEIGHT = 480;
 int Polygon::numberOfPolygons = 0;
 int edgeNumber = 0;
 int polyNumber = 0;
 
 enum {
-    IDLE, DRAW, SCAN
+    IDLE, DRAW, SCAN, ZBUFFER
 } currentStatus = IDLE;
 
 // global variables
 vector<Polygon> polygons;
 bool isTracing = false;
-int ymin = SCR_HERIGHT, ymax = 0;
 vector<list<ActiveEdge> > newEdgeTable;
 list<ActiveEdge> activeEdgeTable;
 
@@ -40,23 +39,22 @@ static void scanAndFill();
 // init NET
 static void initNewEdgeTable(const Polygon &polygon);
 // fill one line
-static void processOneLine(const int y);
+static void processOneLine(const int y, const Color &color);
 // draw one pixel
-static void drawPixel(int x, int y);
+static void drawPixel(int x, int y, const Color &color);
 
 int main(int argc, char *argv[]) {
     glutInit(&argc, argv);
-    // 颜色: RGB显示, 刷新: 双缓存
-    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE);
+    // 颜色: RGB显示, 刷新: 单缓存
+    glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE);
     // 窗口位置
-    glutInitWindowPosition(SCR_WIDTH / 2, SCR_HERIGHT / 2);
-    glutInitWindowSize(SCR_WIDTH, SCR_HERIGHT);
+    glutInitWindowPosition(SCR_WIDTH / 2, SCR_HEIGHT / 2);
+    glutInitWindowSize(SCR_WIDTH, SCR_HEIGHT);
     // 创建窗口, 设置标题
     glutCreateWindow("Lab_3: Scan And Fill");
     // 初始化
     initializer();
-    // 画图展示函数
-    glutDisplayFunc(displayCallback);
+
     glutCreateMenu(menuCallback);
     glutAddMenuEntry("DrawPolygon", 1);
     glutAddMenuEntry("ScanAndFill", 2);
@@ -66,6 +64,8 @@ int main(int argc, char *argv[]) {
     glutMouseFunc(mouseCallback);
     glutPassiveMotionFunc(mouseMotionCallback);
     glutKeyboardFunc(keyboardCallback);
+    // 画图展示函数
+    glutDisplayFunc(displayCallback);
     glutReshapeFunc(reshapeCallback);
     
     glutMainLoop();
@@ -78,7 +78,7 @@ void initializer(void) {
     glClear(GL_COLOR_BUFFER_BIT);
     glPointSize(3.0f);
     glMatrixMode(GL_PROJECTION);
-    gluOrtho2D(0, SCR_WIDTH, 0, SCR_HERIGHT);
+    gluOrtho2D(0, SCR_WIDTH, 0, SCR_HEIGHT);
 }
 
 void displayCallback(void) {
@@ -89,8 +89,6 @@ void displayCallback(void) {
     drawAllPolygons();
     if (currentStatus == SCAN)
         scanAndFill();
-    // 交换缓存区
-    glutSwapBuffers();
 }
 
 void menuCallback(int value) {
@@ -103,11 +101,12 @@ void menuCallback(int value) {
             break;
         case 3: {
             glClear(GL_COLOR_BUFFER_BIT);
-            glutSwapBuffers();
+            glFlush();
             polygons.clear();
             polyNumber = 0;
             edgeNumber = 0;
             currentStatus = IDLE;
+            isTracing = false;
             break;
         }
         default:
@@ -116,12 +115,13 @@ void menuCallback(int value) {
 }
 
 void mouseCallback(int button, int state, int x, int y) {
-    y = SCR_HERIGHT - y;
+    y = SCR_HEIGHT - y;
     
     if (currentStatus == DRAW) {
         if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+            if (isTracing == false)
+                polygons.emplace_back(Polygon());
             isTracing = true;
-            polygons.emplace_back(Polygon());
             polygons[polyNumber].ymin = min(polygons[polyNumber].ymin, y);
             polygons[polyNumber].ymax = max(polygons[polyNumber].ymax, y);
             cout << "Button_Left_Down = [" << x << ", " << y << "]\n";
@@ -146,13 +146,15 @@ void mouseCallback(int button, int state, int x, int y) {
                 }
             }
         }
+    } else if (currentStatus == SCAN) {
+        if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+            scanAndFill();
+        currentStatus = IDLE;
     }
-    // 必须吗？
-    glutPostRedisplay();
 }
 
 void mouseMotionCallback(int x, int y) {
-    y = SCR_HERIGHT - y;
+    y = SCR_HEIGHT - y;
     
     if (currentStatus == DRAW && isTracing) {
         cout << "Button_Move = [" << x << ", " << y << "]\n";
@@ -178,12 +180,13 @@ void reshapeCallback(int width, int height) {
     gluOrtho2D(0, width, 0, height);
     
     SCR_WIDTH = width;
-    SCR_HERIGHT = height;
+    SCR_HEIGHT = height;
 }
 
 void drawAllPolygons() {
     for (auto &polygon : polygons)
         polygon.drawPolygon();
+    glFlush();
 }
 
 void scanAndFill() {
@@ -193,17 +196,15 @@ void scanAndFill() {
         // 初始化新边表
         initNewEdgeTable(polygon);
         activeEdgeTable.clear();
-        glBegin(GL_POINTS);
-        glColor3f(polygon.color.r, polygon.color.g, polygon.color.b);
+        
         for (int i = polygon.ymin; i <= polygon.ymax; i++) {
-            for (auto &edge : newEdgeTable[i - ymin])
+            for (auto &edge : newEdgeTable[i - polygon.ymin])
                 activeEdgeTable.push_back(edge);
             // 考虑自相交, sort使其有序
             activeEdgeTable.sort();
             // 处理一行扫描, 更新AET
-            processOneLine(i);
+            processOneLine(i, polygon.color);
         }
-        glEnd();
     }
 }
 
@@ -217,21 +218,20 @@ void initNewEdgeTable(const Polygon &polygon) {
             continue;
         deltaX = (edge.from.x - edge.to.x + 0.0) / (edge.from.y - edge.to.y);
         if (edge.from.y < edge.to.y)
-            newEdgeTable[edge.from.y - ymin].emplace_back(edge.from.x, deltaX, edge.to.y);
+            newEdgeTable[edge.from.y - polygon.ymin].emplace_back(edge.from.x, deltaX, edge.to.y);
         else
-            newEdgeTable[edge.to.y - ymin].emplace_back(edge.to.x, deltaX, edge.from.y);
+            newEdgeTable[edge.to.y - polygon.ymin].emplace_back(edge.to.x, deltaX, edge.from.y);
     }
 }
 
-void processOneLine(const int y) {
+void processOneLine(const int y, const Color &color) {
     auto front = activeEdgeTable.begin(), from = front, to = front;
     ++to;
     vector<list<ActiveEdge>::iterator> readyToRemove;
     
     while (to != activeEdgeTable.end()) {
         for (int x = from->currentX; x < to->currentX; x++) {
-            drawPixel(x, y);
-            glutPostRedisplay();
+            drawPixel(x, y, color);
         }
         if (to->ymax == y)
             readyToRemove.push_back(to);
@@ -250,6 +250,10 @@ void processOneLine(const int y) {
         activeEdgeTable.erase(iter);
 }
 
-void drawPixel(int x, int y) {
+void drawPixel(int x, int y, const Color &color) {
+    glBegin(GL_POINTS);
+    glColor3f(color.r, color.g, color.b);
     glVertex2f(x, y);
+    glEnd();
+    glFlush();
 }
