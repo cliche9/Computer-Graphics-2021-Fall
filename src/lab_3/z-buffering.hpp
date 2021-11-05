@@ -70,10 +70,9 @@ struct Plane {
     }
     
     Plane(const Point &p1, const Point &p2, const Point &p3) {
-        float determinant = p1.x * (p2.y * p3.z - p3.y * p2.z) - p1.y * (p2.x * p3.z - p3.x * p2.z) + p1.z * (p2.x * p3.y - p3.x * p2.y);
-        this->a = (p2.y - p1.y) * (p3.z - p1.z) - (p2.z - p1.z) * (p3.y - p1.y) / determinant;
-        this->b = (p3.x - p1.x) * (p2.z - p1.z) - (p2.x - p1.x) * (p3.z - p1.z) / determinant;
-        this->c = (p2.x - p1.x) * (p3.y - p1.y) - (p3.x - p1.x) * (p2.y - p1.y) / determinant;
+        this->a = (p2.y - p1.y) * (p3.z - p1.z) - (p2.z - p1.z) * (p3.y - p1.y);
+        this->b = (p3.x - p1.x) * (p2.z - p1.z) - (p2.x - p1.x) * (p3.z - p1.z);
+        this->c = (p2.x - p1.x) * (p3.y - p1.y) - (p3.x - p1.x) * (p2.y - p1.y);
         this->d = -(a * p1.x + b * p1.y + c * p1.z);
     }
     

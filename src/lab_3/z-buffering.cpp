@@ -170,7 +170,11 @@ bool isInTriangle(const vector<Line> &edges, GLfloat x, GLfloat y) {
 
 void zBuffer() {
     // 初始化三角形
-    triangles.emplace_back(Point(120, 180, 100), Point(60, 340, 100), Point(600, 400, 300), Color(1, 0, 0));
+    /*
+    triangles.emplace_back(Point(120, 180, 100), Point(120, 60, 100), Point(600, 120, 300), Color(1, 0, 0));
+    triangles.emplace_back(Point(600, 180, 100), Point(600, 60, 100), Point(120, 120, 300), Color(1, 0, 0));
+    */
+    triangles.emplace_back(Point(120, 180, 100), Point(60, 340, 100), Point(600, 400, 800), Color(1, 0, 0));
     triangles.emplace_back(Point(100, 130, 100), Point(30, 300, 400), Point(420, 460, 700), Color(0, 1, 0));
     triangles.emplace_back(Point(450, 220, 600), Point(0, 360, 200), Point(420, 460, 100), Color(0, 0, 1));
     Triangle::numberOfTriangles = 3;
@@ -198,14 +202,18 @@ void zBuffer() {
     Triangle::numberOfTriangles = 0;
 }
 
-void antiAliasing() {
-    // 初始化MSAA
-    int subsize = 2*2;
+void antiAliasing(){
+    const int subsize = 3 * 3;
     pair<float, float> offsets[subsize];
-    offsets[0] = make_pair(-0.5, 0.5);
-    offsets[1] = make_pair(0.5, 0.5);
-    offsets[2] = make_pair(-0.5, -0.5);
-    offsets[3] = make_pair(0.5, -0.5);
+    offsets[0] = make_pair(-0.33, 0.33);
+    offsets[1] = make_pair(0.0, 0.33);
+    offsets[2] = make_pair(0.33,0.33);
+    offsets[3] = make_pair(-0.33, 0);
+    offsets[4] = make_pair(0.0,0.0);
+    offsets[5] = make_pair(0.33, 0.0);
+    offsets[6] = make_pair(-0.33, -0.33);
+    offsets[7] = make_pair(0.0, -0.33);
+    offsets[8] = make_pair(0.33, -0.33);
     // 初始化三角形
     vector<Line> edges;
     edges.emplace_back(Point(120, 180), Point(600, 400));
@@ -216,7 +224,7 @@ void antiAliasing() {
     int yBottom = SCR_HEIGHT, yTop = 0;
 
     glBegin(GL_TRIANGLES);
-    for (auto &edge : edges) {
+    for (auto& edge : edges) {
         glVertex2f(edge.from.x, edge.from.y);
         xLeft = min(edge.from.x, xLeft);
         xRight = max(edge.from.x, xRight);
@@ -224,19 +232,18 @@ void antiAliasing() {
         yTop = max(edge.from.y, yTop);
     }
     glEnd();
-    
+
     glBegin(GL_POINTS);
     for (int x = xLeft; x <= xRight; x++) {
         for (int y = yBottom; y <= yTop; y++) {
             int inCount = 0;
-            for (const auto &offset : offsets) {
+            for (const auto& offset : offsets) {
                 if (isInTriangle(edges, x + offset.first, y + offset.second))
                     inCount++;
-                drawPixel(x, y, color * ((inCount + 0.0)/subsize));
+                Color color_now = color * ((inCount + 0.0) / subsize);
+                drawPixel(x, y, color_now);
             }
         }
     }
     glEnd();
-    
-    
 }
