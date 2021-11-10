@@ -3,3 +3,8 @@
 !.gitignore
 # src
 !/src
+/src/*
+!/src/lab_1
+!/src/lab_2
+!/src/lab_3
+!/src/lab_4
