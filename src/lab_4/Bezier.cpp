@@ -297,7 +297,58 @@ void deCasteljau() {
 }
 
 void deBoor() {
+    vector<Point> currentPoints(controlPoints);
+    vector<Point> deBoorPoints;
+    int n = (int)controlPoints.size() - 1;
+    int p = 3;
+    float t[100000];
     
+    // 准均匀B样条
+    for (int i = 0; i < p; i++)
+        t[i] = 0;
+    for (int i = p; i < n + 1; i++)
+        t[i] = t[i - 1] + 1.0 / (n + 1 - p + 1);
+    for (int i = n + 1; i <= n + p; i++)
+        t[i] = 1;
+    
+    for (int j = p - 1; j <= n; j++) {
+        for (float u = t[j]; u <= t[j + 1]; u += 0.001 / n) {
+            for (int r = 1; r <= p - 1; r++) {
+                for (int i = j; i >= j - p + r + 1; i--) {
+                    float x1 = u - t[i];
+                    float x2 = t[i + p - r] - t[i];
+                    float y1 = t[i + p - r] - u;
+                    float y2 = t[i + p - r] - t[i];
+                    
+                    float c1, c2;
+                    if (x1 == 0.0f && x2 == 0.0f)
+                        c1 = 0;
+                    else
+                        c1 = x1 / x2;
+                    if (y1 == 0.0f && y2 == 0.0f)
+                        c2 = 0;
+                    else
+                        c2 = y1 / y2;
+                    
+                    if (r == 1) {
+                        currentPoints[i].x = controlPoints[i].x * c1 + controlPoints[i - 1].x * c2;
+                        currentPoints[i].y = controlPoints[i].y * c1 + controlPoints[i - 1].y * c2;
+                        continue;
+                    } else {
+                        currentPoints[i].x = currentPoints[i].x * c1 + currentPoints[i - 1].x * c2;
+                        currentPoints[i].y = currentPoints[i].y * c1 + currentPoints[i - 1].y * c2;
+                    }
+                }
+            }
+            deBoorPoints.emplace_back(currentPoints[j]);
+        }
+    }
+    
+    glBegin(GL_LINE_STRIP);
+    glColor3f(colorOfBspline.r, colorOfBspline.g, colorOfBspline.b);
+    for (auto &p : deBoorPoints)
+        drawPixel(p.x, p.y);
+    glEnd();
 }
 
 void drawPixel(GLfloat x, GLfloat y) {
