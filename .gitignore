@@ -7,9 +7,9 @@
 # src
 !/src
 /src/*
-!/src/lab_1
-!/src/lab_2
-!/src/lab_3
-!/src/lab_4
-!/src/lab_5
-!/src/lab_6
+!/src/exp1
+!/src/exp2
+!/src/exp3
+!/src/exp4
+!/src/exp5
+!/src/epx6
