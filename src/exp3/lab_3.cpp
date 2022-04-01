@@ -1,12 +1,12 @@
 //
-//  lab_3.cpp
-//  lab_3
+//  exp3.cpp
+//  exp3
 //
 //  Created by abc_mac on 2021/10/22.
 //
 
 #include <list>
-#include "lab_3.hpp"
+#include "exp3.hpp"
 using namespace std;
 
 int SCR_WIDTH = 640, SCR_HEIGHT = 480;
@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
     glutInitWindowPosition(SCR_WIDTH / 2, SCR_HEIGHT / 2);
     glutInitWindowSize(SCR_WIDTH, SCR_HEIGHT);
     // 创建窗口, 设置标题
-    glutCreateWindow("Lab_3: Scan And Fill");
+    glutCreateWindow("exp3: Scan And Fill");
     // 初始化
     initializer();
 

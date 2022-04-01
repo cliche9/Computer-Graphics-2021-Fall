@@ -1,6 +1,6 @@
 //
 //  main.cpp
-//  lab_2
+//  exp2
 //
 //  Created by abc_mac on 2021/10/2.
 //
@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
     glutInitWindowPosition(SCR_WIDTH / 2, SCR_HERIGHT / 2);
     glutInitWindowSize(SCR_WIDTH, SCR_HERIGHT);
     // 创建窗口, 设置标题
-    glutCreateWindow("Lab_2: Liang-Barsky clipping");
+    glutCreateWindow("exp2: Liang-Barsky clipping");
     // 初始化
     initializer();
     // 画图展示函数

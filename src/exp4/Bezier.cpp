@@ -1,6 +1,6 @@
 //
 //  Bezier.cpp
-//  lab_4
+//  exp4
 //
 //  Created by abc_mac on 2021/11/5.
 //
@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
     glutInitWindowPosition(SCR_WIDTH / 2, SCR_HEIGHT / 2);
     glutInitWindowSize(SCR_WIDTH, SCR_HEIGHT);
     // 创建窗口, 设置标题
-    glutCreateWindow("Lab_3: Scan And Fill");
+    glutCreateWindow("exp3: Scan And Fill");
     // 初始化
     initializer();
 

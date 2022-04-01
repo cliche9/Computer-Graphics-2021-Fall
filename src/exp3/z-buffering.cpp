@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
     glutInitWindowPosition(SCR_WIDTH / 2, SCR_HEIGHT / 2);
     glutInitWindowSize(SCR_WIDTH, SCR_HEIGHT);
     // 创建窗口, 设置标题
-    glutCreateWindow("Lab_3: Z-Buffering");
+    glutCreateWindow("exp3: Z-Buffering");
     // 初始化
     initializer();
 

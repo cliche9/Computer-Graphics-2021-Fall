@@ -1,6 +1,6 @@
 //
 //  main.cpp
-//  lab_1
+//  exp1
 //
 //  Created by abc_mac on 2021/9/18.
 //
@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
     glutInitWindowPosition(SCR_WIDTH / 2, SCR_HERIGHT / 2);
     glutInitWindowSize(SCR_WIDTH, SCR_HERIGHT);
     // 创建窗口, 设置标题
-    glutCreateWindow("Lab_1: Stroke and line");
+    glutCreateWindow("exp1: Stroke and line");
     // 初始化
     initializer();
     // 画图展示函数

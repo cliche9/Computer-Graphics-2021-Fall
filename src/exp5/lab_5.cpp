@@ -1,14 +1,14 @@
 //
-//  lab_5.cpp
-//  lab_5
+//  exp5.cpp
+//  exp5
 //
 //  Created by abc_mac on 2021/11/19.
 //
 
-#include "lab_5.hpp"
+#include "exp5.hpp"
 #include "arcball.hpp"
 
-const string modelPath = "/Users/abc_mac/Code/CG_2021Fall/lab_5/lab_5/models/";
+const string modelPath = "/Users/abc_mac/Code/CG_2021Fall/exp5/exp5/models/";
 const string modelFiles[] = {"pyramid.off", "cube.off", "bunny.off", "bumpy.off"};
 Model model;
 bool isColorified = false;
@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
     glutInitWindowPosition(SCR_WIDTH / 2, SCR_HEIGHT / 2);
     glutInitWindowSize(SCR_WIDTH, SCR_HEIGHT);
     // 创建窗口, 设置标题
-    glutCreateWindow("Lab_5: Half-Edge Structure");
+    glutCreateWindow("exp5: Half-Edge Structure");
     // 初始化
     initializer();
 

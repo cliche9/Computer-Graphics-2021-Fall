@@ -1,12 +1,12 @@
 //
-//  lab_5.hpp
-//  lab_5
+//  exp5.hpp
+//  exp5
 //
 //  Created by abc_mac on 2021/11/19.
 //
 
-#ifndef lab_5_hpp
-#define lab_5_hpp
+#ifndef exp5_hpp
+#define exp5_hpp
 
 #define GL_SILENCE_DEPRECATION
 #define SCR_WIDTH 800
@@ -350,4 +350,4 @@ private:
     int numberOfEdges;
 };
 
-#endif /* lab_5_hpp */
+#endif /* exp5_hpp */

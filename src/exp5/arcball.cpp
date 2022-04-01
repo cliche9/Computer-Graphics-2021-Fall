@@ -1,6 +1,6 @@
 //
 //  arcball.cpp
-//  lab_5
+//  exp5
 //
 //  Created by abc_mac on 2021/11/10.
 //

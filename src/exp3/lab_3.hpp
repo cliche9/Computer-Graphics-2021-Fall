@@ -1,12 +1,12 @@
 //
-//  lab_3.hpp
-//  lab_3
+//  exp3.hpp
+//  exp3
 //
 //  Created by abc_mac on 2021/10/22.
 //
 
-#ifndef lab_3_hpp
-#define lab_3_hpp
+#ifndef exp3_hpp
+#define exp3_hpp
 
 #define GL_SILENCE_DEPRECATION
 #include <iostream>
@@ -85,4 +85,4 @@ struct ActiveEdge {
     }
 };
 
-#endif /* lab_3_hpp */
+#endif /* exp3_hpp */

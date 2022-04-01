@@ -1,6 +1,6 @@
 //
 //  Bezier.hpp
-//  lab_4
+//  exp4
 //
 //  Created by abc_mac on 2021/11/5.
 //
