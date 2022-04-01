@@ -1,6 +1,10 @@
 # root
 /*
 !.gitignore
+!README.md
+# res
+!/res
+/res/*
 # src
 !/src
 /src/*
